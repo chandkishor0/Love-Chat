@@ -20,30 +20,51 @@ body {
     padding:15px;
     border-radius:15px;
     box-shadow:0 0 20px #ff69b4;
+    text-align:center;
 }
 
-input, button {
-    width:100%;
-    padding:10px;
-    margin:5px 0;
-    border-radius:10px;
-    border:none;
-    font-size:16px;
-    outline:none;
+/* Input Fields */
+input[type="email"],
+input[type="password"],
+input[type="text"] {
+    width: 90%;
+    max-width: 300px;
+    padding: 8px 12px;
+    margin: 8px auto;
+    display: block;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    outline: none;
+    transition: 0.3s;
+}
+input:focus {
+    border-color: #ff69b4;
+    box-shadow: 0 0 6px rgba(255,105,180,0.5);
 }
 
+/* Buttons */
 button {
-    background:#ff69b4;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-    box-shadow:0 0 10px #ff69b4;
+    width: auto;
+    min-width: 100px;
+    padding: 8px 14px;
+    margin: 6px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    outline: none;
+    background: #ff69b4;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 0 8px #ff69b4;
     transition: 0.3s;
 }
 button:hover {
     background:#ff3385;
 }
 
+/* Chat Box */
 #chatBox {
     height:400px;
     overflow-y:auto;
@@ -57,28 +78,29 @@ button:hover {
     scroll-behavior:smooth;
 }
 
+/* Messages */
 .msg {
-    padding:10px 14px;
+    padding:8px 12px;
     border-radius:15px;
     max-width:70%;
-    font-size:15px;
+    font-size:14px;
     animation: pop 0.3s ease;
     word-wrap: break-word;
 }
 .msg.you {
     background: rgba(255,182,193,0.7);
-    box-shadow:0 0 10px #ff69b4;
+    box-shadow:0 0 8px #ff69b4;
     align-self:flex-end;
     text-align:right;
 }
 .msg.partner {
     background: rgba(173,216,230,0.7);
-    box-shadow:0 0 10px #00ffff;
+    box-shadow:0 0 8px #00ffff;
     align-self:flex-start;
     text-align:left;
 }
 
-/* Floating Heart (optional) */
+/* Floating Heart */
 .heart {
     position:absolute;
     width:20px;
@@ -112,22 +134,29 @@ button:hover {
 .theme-purple { background: linear-gradient(to bottom, #a18cd1, #fbc2eb); }
 .theme-night { background: linear-gradient(to bottom, #141e30, #243b55); }
 
+/* Chat Input + Buttons */
 .chatInputContainer {
   display:flex;
   flex-direction:column;
 }
 .chatInputContainer input {
   margin-bottom:5px;
+  width:90%;
+  max-width:350px;
+  margin:auto;
 }
 .chatButtonContainer {
   display:flex;
   flex-wrap:wrap;
   gap:5px;
+  justify-content:center;
 }
 .chatButtonContainer button {
   flex:1;
+  min-width: 80px;
 }
 
+/* Typing Indicator */
 #typingIndicator {
   color:white;
   font-size:14px;
@@ -143,6 +172,7 @@ button:hover {
   50% {opacity:1;}
 }
 
+/* Chat Header */
 .chatHeader {
   display: flex;
   justify-content: space-between;
@@ -153,11 +183,9 @@ button:hover {
   padding: 10px;
   border-radius: 10px 10px 0 0;
 }
-
 .chatHeader #partnerName {
   font-size: 16px;
 }
-
 .chatHeader .themeBtn {
   background: transparent;
   border: none;
