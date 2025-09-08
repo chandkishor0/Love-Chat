@@ -72,29 +72,33 @@ function showPartnerBox() {
   document.getElementById("authBox").style.display = "none";
   document.getElementById("partnerBox").style.display = "block";
 }
-
 // --- Partner Setup ---
 function setPartner() {
   partnerUser = document.getElementById("partnerEmail").value.trim();
-  const partnerCode = document.getElementById("partnerSecretCode").value.trim();
-  if (!partnerUser || !partnerCode) return alert("Enter partner email & secret code");
+  const enteredCode = document.getElementById("partnerSecretCode").value.trim();
+  if (!partnerUser || !enteredCode) return alert("Enter partner email & secret code");
 
   chatId = [sanitizeEmail(currentUser), sanitizeEmail(partnerUser)].sort().join("_");
   const chatRef = db.ref('chats/' + chatId);
 
+  // 🔑 Get partner's actual fixed secret code from DB
   db.ref('users/' + sanitizeEmail(partnerUser) + '/secretCode').once('value')
     .then(snapshot => {
-      const partnerSecret = snapshot.exists() ? snapshot.val() : partnerCode;
+      if (!snapshot.exists()) {
+        return alert("❌ Partner not found or not registered!");
+      }
+      const partnerSecret = snapshot.val();
 
+      // ✅ Now check entered code
+      if (enteredCode !== partnerSecret) {
+        return alert("❌ Wrong partner secret code!");
+      }
+
+      // If chat not exists, create one with both codes
       chatRef.once('value').then(snap => {
-        if (snap.exists()) {
-          const storedCodes = snap.val().partnerCodes || {};
-          if (storedCodes[sanitizeEmail(partnerUser)] !== partnerSecret) {
-            return alert("Partner secret code incorrect!");
-          }
-        } else {
+        if (!snap.exists()) {
           const codesObj = {};
-          codesObj[sanitizeEmail(currentUser)] = mySecretCode;
+          codesObj[sanitizeEmail(currentUser)] = document.getElementById("mySecretCode").innerText;
           codesObj[sanitizeEmail(partnerUser)] = partnerSecret;
           chatRef.set({ partnerCodes: codesObj });
         }
