@@ -1,68 +1,65 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Love Chat 💖 Secure</title>
-<link rel="stylesheet" href="style.css">
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-storage-compat.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Love Chat</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
 </head>
 <body class="theme-pink">
 
-<div class="container">
+  <div class="container">
 
-  <!-- LOGIN / SIGNUP -->
-  <div id="authBox">
-    <h1>Love Chat 💖</h1>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="signup()">Signup</button>
-    <button onclick="login()">Login</button>
-    <p id="authMsg"></p>
-  </div>
-
-  <!-- PARTNER SETUP -->
-  <div id="partnerBox" style="display:none;">
-    <h2>Enter Partner Details</h2>
-    <input type="email" id="partnerEmail" placeholder="Partner Email">
-    <input type="text" id="partnerSecretCode" placeholder="Enter Partner Secret Code">
-    <button onclick="setPartner()">Start Chat</button>
-    <p id="secretCodeMsg"></p>
-
-    <!-- Secret Code Info (now correctly inside partnerBox) -->
-    <div style="margin-top:15px; padding:10px; border:1px dashed #ff69b4; border-radius:10px; background:rgba(255,255,255,0.3);">
-        <p><b>Your Secret Code:</b> <span id="mySecretCode">...</span></p>
-        <small style="color:#555;">⚠️ Share this code only with your partner.</small>
-    </div>
-  </div>
-
-  <!-- CHAT BOX -->
-  <div id="chatBoxContainer" style="display:none;">
-
-    <!-- Chat Header -->
-    <div class="chatHeader">
-      <span id="partnerName">Partner Chat</span>
-      <button onclick="toggleTheme()" class="themeBtn">🌙</button>
+    <!-- Signup / Login Box -->
+    <div id="authBox">
+      <h2>Login / Signup</h2>
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <button onclick="signup()">Sign Up</button>
+      <button onclick="login()">Login</button>
+      <p id="authMsg" style="color:red"></p>
     </div>
 
-    <div id="chatBox"></div>
-    
-    <div class="chatInputContainer">
-        <input type="text" id="messageInput" placeholder="Type message...">
-        <button onclick="sendMessage()">Send</button>
+    <!-- Partner Entry Box -->
+    <div id="partnerBox" style="display:none;">
+      <h2>Enter Partner Details</h2>
+      <input type="email" id="partnerEmail" placeholder="Partner Email" />
+      <input type="text" id="partnerSecretCode" placeholder="Partner Secret Code" />
+      <p>Your Secret Code: <b id="mySecretCode"></b></p>
+      <button onclick="setPartner()">Start Chat</button>
     </div>
 
-    <span id="typingIndicator"></span>
-    <p id="codeDisplay" style="font-size:12px;color:white;margin-top:5px;"></p>
+    <!-- Chat Container -->
+    <div id="chatBoxContainer" style="display:none;">
+      <div class="chatHeader">
+        <span id="partnerName">Partner Chat</span>
+        <!-- Fixed neon logout button -->
+        <button id="logoutBtn" onclick="logout()" aria-label="Logout" title="Logout">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+        </button>
+      </div>
+      <p id="codeDisplay"></p>
+      <div id="chatBox"></div>
+      <div id="typingIndicator"></div>
+      <div class="chatInputContainer">
+        <input type="text" id="messageInput" placeholder="Type your message..." />
+        <div class="chatButtonContainer">
+          <button onclick="sendMessage()">Send</button>
+          <button onclick="toggleTheme()">Change Theme</button>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-</div> <!-- container end -->
-
-<script src="app.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
