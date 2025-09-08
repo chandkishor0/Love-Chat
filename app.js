@@ -13,25 +13,19 @@ firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.database();
 
-// --- Force Auth Persistence for APK / WebView ---
-auth.setPersistence(firebase.auth.Auth.Persistence.LOCAL)
-  .catch(err => console.error("Persistence error:", err));
-
 // --- Variables ---
 const sanitizeEmail = email => email.replace(/\./g, ',');
 let currentUser = null, partnerUser = null, chatId = null, currentTheme = 'theme-pink';
 let mySecretCode = null;
 
-// --- Auto Login Listener ---
+// --- Auto Login ---
 auth.onAuthStateChanged(user => {
   if (user) {
     currentUser = user.email;
     const userRef = db.ref('users/' + sanitizeEmail(currentUser));
-
     userRef.once('value').then(snapshot => {
-      if (snapshot.exists() && snapshot.val().secretCode) {
-        mySecretCode = snapshot.val().secretCode;
-      } else {
+      if (snapshot.exists() && snapshot.val().secretCode) mySecretCode = snapshot.val().secretCode;
+      else {
         mySecretCode = Math.floor(100000 + Math.random() * 900000).toString();
         userRef.update({ secretCode: mySecretCode });
       }
@@ -39,16 +33,9 @@ auth.onAuthStateChanged(user => {
       showPartnerBox();
     });
   } else {
-    // User not logged in
     document.getElementById("authBox").style.display = "block";
     document.getElementById("partnerBox").style.display = "none";
     document.getElementById("chatBoxContainer").style.display = "none";
-
-    // Clear secret codes and inputs
-    mySecretCode = null;
-    document.getElementById("partnerEmail").value = "";
-    document.getElementById("partnerSecretCode").value = "";
-    document.getElementById("codeDisplay").innerText = "";
   }
 });
 
@@ -57,21 +44,19 @@ function signup() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   if (!email || !password) return alert("Enter email & password");
-
   auth.createUserWithEmailAndPassword(email, password)
-    .catch(err => document.getElementById("authMsg").innerText = err.message);
+      .catch(err => document.getElementById("authMsg").innerText = err.message);
 }
 
 function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   if (!email || !password) return alert("Enter email & password");
-
   auth.signInWithEmailAndPassword(email, password)
-    .catch(err => document.getElementById("authMsg").innerText = err.message);
+      .catch(err => document.getElementById("authMsg").innerText = err.message);
 }
 
-// --- Logout ---
+// --- Logout with partner inputs cleared ---
 function logout() {
   const btn = document.getElementById("logoutBtn");
   btn.classList.add('logout-active');
