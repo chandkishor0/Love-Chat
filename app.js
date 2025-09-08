@@ -18,14 +18,38 @@ const sanitizeEmail = email => email.replace(/\./g, ',');
 let currentUser = null, partnerUser = null, chatId = null, currentTheme = 'theme-pink';
 let mySecretCode = null;
 
+// --- Helper: Save / Load credentials for APK auto-login ---
+function saveCredentials(email, password) {
+  localStorage.setItem("lc_email", email);
+  localStorage.setItem("lc_password", password);
+}
+function clearCredentials() {
+  localStorage.removeItem("lc_email");
+  localStorage.removeItem("lc_password");
+}
+function loadCredentials() {
+  const email = localStorage.getItem("lc_email");
+  const password = localStorage.getItem("lc_password");
+  return (email && password) ? { email, password } : null;
+}
+
 // --- Auto Login ---
+window.addEventListener("load", () => {
+  const creds = loadCredentials();
+  if (creds) {
+    auth.signInWithEmailAndPassword(creds.email, creds.password)
+      .catch(err => console.log("Auto-login failed:", err.message));
+  }
+});
+
 auth.onAuthStateChanged(user => {
   if (user) {
     currentUser = user.email;
     const userRef = db.ref('users/' + sanitizeEmail(currentUser));
     userRef.once('value').then(snapshot => {
-      if (snapshot.exists() && snapshot.val().secretCode) mySecretCode = snapshot.val().secretCode;
-      else {
+      if (snapshot.exists() && snapshot.val().secretCode) {
+        mySecretCode = snapshot.val().secretCode;
+      } else {
         mySecretCode = Math.floor(100000 + Math.random() * 900000).toString();
         userRef.update({ secretCode: mySecretCode });
       }
@@ -33,6 +57,9 @@ auth.onAuthStateChanged(user => {
       showPartnerBox();
     });
   } else {
+    // Not logged in
+    currentUser = null;
+    mySecretCode = null;
     document.getElementById("authBox").style.display = "block";
     document.getElementById("partnerBox").style.display = "none";
     document.getElementById("chatBoxContainer").style.display = "none";
@@ -45,7 +72,8 @@ function signup() {
   const password = document.getElementById("password").value.trim();
   if (!email || !password) return alert("Enter email & password");
   auth.createUserWithEmailAndPassword(email, password)
-      .catch(err => document.getElementById("authMsg").innerText = err.message);
+    .then(() => saveCredentials(email, password))
+    .catch(err => document.getElementById("authMsg").innerText = err.message);
 }
 
 function login() {
@@ -53,31 +81,30 @@ function login() {
   const password = document.getElementById("password").value.trim();
   if (!email || !password) return alert("Enter email & password");
   auth.signInWithEmailAndPassword(email, password)
-      .catch(err => document.getElementById("authMsg").innerText = err.message);
+    .then(() => saveCredentials(email, password))
+    .catch(err => document.getElementById("authMsg").innerText = err.message);
 }
 
-// --- Logout with partner inputs cleared ---
+// --- Logout ---
 function logout() {
-  const btn = document.getElementById("logoutBtn");
-  btn.classList.add('logout-active');
-  setTimeout(() => {
-    auth.signOut();
-    currentUser = null;
-    partnerUser = null;
-    chatId = null;
+  auth.signOut();
+  currentUser = null;
+  partnerUser = null;
+  chatId = null;
+  mySecretCode = null;
 
-    // Clear only partner-related inputs
-    document.getElementById("partnerEmail").value = "";
-    document.getElementById("partnerSecretCode").value = "";
-    document.getElementById("codeDisplay").innerText = "";
+  clearCredentials(); // clear saved login for APK
 
-    // Reset UI
-    document.getElementById("authBox").style.display = "block";
-    document.getElementById("partnerBox").style.display = "none";
-    document.getElementById("chatBoxContainer").style.display = "none";
+  // Clear partner fields
+  document.getElementById("partnerEmail").value = "";
+  document.getElementById("partnerSecretCode").value = "";
+  document.getElementById("mySecretCode").innerText = "...";
+  document.getElementById("codeDisplay").innerText = "";
 
-    btn.classList.remove('logout-active');
-  }, 500);
+  // Reset UI
+  document.getElementById("authBox").style.display = "block";
+  document.getElementById("partnerBox").style.display = "none";
+  document.getElementById("chatBoxContainer").style.display = "none";
 }
 
 // --- Partner Setup ---
@@ -209,7 +236,7 @@ setInterval(() => {
   const heart = document.createElement("div");
   heart.className = "heart";
   heart.style.left = Math.random() * 100 + "vw";
-  heart.style.width = 10 + Math.random() * 20 + "px";
+  heart.style.width = 10 + Math.random() * 20 + "
   heart.style.height = heart.style.width;
   heart.style.animationDuration = 4 + Math.random() * 4 + "s";
   document.body.appendChild(heart);
@@ -218,7 +245,14 @@ setInterval(() => {
 
 // --- Theme Toggle ---
 function toggleTheme() {
-  if (currentTheme === 'theme-pink') { document.body.className = 'theme-night'; currentTheme = 'theme-night'; }
-  else if (currentTheme === 'theme-night') { document.body.className = 'theme-purple'; currentTheme = 'theme-purple'; }
-  else { document.body.className = 'theme-pink'; currentTheme = 'theme-pink'; }
+  if (currentTheme === 'theme-pink') {
+    document.body.className = 'theme-night';
+    currentTheme = 'theme-night';
+  } else if (currentTheme === 'theme-night') {
+    document.body.className = 'theme-purple';
+    currentTheme = 'theme-purple';
+  } else {
+    document.body.className = 'theme-pink';
+    currentTheme = 'theme-pink';
+  }
 }
