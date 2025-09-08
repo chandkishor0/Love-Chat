@@ -18,61 +18,74 @@ const sanitizeEmail = email => email.replace(/\./g, ',');
 let currentUser = null, partnerUser = null, chatId = null, currentTheme = 'theme-pink';
 let mySecretCode = null;
 
+// --- Auto Login ---
+auth.onAuthStateChanged(user => {
+  if (user) {
+    currentUser = user.email;
+    const userRef = db.ref('users/' + sanitizeEmail(currentUser));
+    userRef.once('value').then(snapshot => {
+      if (snapshot.exists() && snapshot.val().secretCode) mySecretCode = snapshot.val().secretCode;
+      else {
+        mySecretCode = Math.floor(100000 + Math.random() * 900000).toString();
+        userRef.update({ secretCode: mySecretCode });
+      }
+      document.getElementById("mySecretCode").innerText = mySecretCode;
+      showPartnerBox();
+    });
+  } else {
+    document.getElementById("authBox").style.display = "block";
+    document.getElementById("partnerBox").style.display = "none";
+    document.getElementById("chatBoxContainer").style.display = "none";
+  }
+});
+
 // --- Signup / Login ---
 function signup() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   if (!email || !password) return alert("Enter email & password");
-
   auth.createUserWithEmailAndPassword(email, password)
-    .then(() => {
-      currentUser = email;
-      const userRef = db.ref('users/' + sanitizeEmail(currentUser));
-
-      userRef.once('value').then(snapshot => {
-        if (snapshot.exists() && snapshot.val().secretCode) {
-          mySecretCode = snapshot.val().secretCode; // use existing
-        } else {
-          mySecretCode = Math.floor(100000 + Math.random() * 900000).toString(); // generate new
-          userRef.update({ secretCode: mySecretCode });
-        }
-        document.getElementById("mySecretCode").innerText = mySecretCode;
-        showPartnerBox();
-      });
-    })
-    .catch(err => document.getElementById("authMsg").innerText = err.message);
+      .catch(err => document.getElementById("authMsg").innerText = err.message);
 }
 
 function login() {
   const email = document.getElementById("email").value.trim();
   const password = document.getElementById("password").value.trim();
   if (!email || !password) return alert("Enter email & password");
-
   auth.signInWithEmailAndPassword(email, password)
-    .then(() => {
-      currentUser = email;
-      const userRef = db.ref('users/' + sanitizeEmail(currentUser));
-
-      userRef.once('value').then(snapshot => {
-        if (snapshot.exists() && snapshot.val().secretCode) {
-          mySecretCode = snapshot.val().secretCode; // use existing
-        } else {
-          mySecretCode = Math.floor(100000 + Math.random() * 900000).toString(); // generate new
-          userRef.update({ secretCode: mySecretCode });
-        }
-        document.getElementById("mySecretCode").innerText = mySecretCode;
-        showPartnerBox();
-      });
-    })
-    .catch(err => document.getElementById("authMsg").innerText = err.message);
+      .catch(err => document.getElementById("authMsg").innerText = err.message);
 }
 
-// --- Show Partner Entry Box ---
+// --- Logout with partner inputs cleared ---
+function logout() {
+  const btn = document.getElementById("logoutBtn");
+  btn.classList.add('logout-active');
+  setTimeout(() => {
+    auth.signOut();
+    currentUser = null;
+    partnerUser = null;
+    chatId = null;
+
+    // Clear only partner-related inputs
+    document.getElementById("partnerEmail").value = "";
+    document.getElementById("partnerSecretCode").value = "";
+    document.getElementById("codeDisplay").innerText = "";
+
+    // Reset UI
+    document.getElementById("authBox").style.display = "block";
+    document.getElementById("partnerBox").style.display = "none";
+    document.getElementById("chatBoxContainer").style.display = "none";
+
+    btn.classList.remove('logout-active');
+  }, 500);
+}
+
+// --- Partner Setup ---
 function showPartnerBox() {
   document.getElementById("authBox").style.display = "none";
   document.getElementById("partnerBox").style.display = "block";
 }
-// --- Partner Setup ---
+
 function setPartner() {
   partnerUser = document.getElementById("partnerEmail").value.trim();
   const enteredCode = document.getElementById("partnerSecretCode").value.trim();
@@ -81,24 +94,16 @@ function setPartner() {
   chatId = [sanitizeEmail(currentUser), sanitizeEmail(partnerUser)].sort().join("_");
   const chatRef = db.ref('chats/' + chatId);
 
-  // 🔑 Get partner's actual fixed secret code from DB
   db.ref('users/' + sanitizeEmail(partnerUser) + '/secretCode').once('value')
     .then(snapshot => {
-      if (!snapshot.exists()) {
-        return alert("❌ Partner not found or not registered!");
-      }
+      if (!snapshot.exists()) return alert("❌ Partner not found!");
       const partnerSecret = snapshot.val();
+      if (enteredCode !== partnerSecret) return alert("❌ Wrong secret code!");
 
-      // ✅ Now check entered code
-      if (enteredCode !== partnerSecret) {
-        return alert("❌ Wrong partner secret code!");
-      }
-
-      // If chat not exists, create one with both codes
       chatRef.once('value').then(snap => {
         if (!snap.exists()) {
           const codesObj = {};
-          codesObj[sanitizeEmail(currentUser)] = document.getElementById("mySecretCode").innerText;
+          codesObj[sanitizeEmail(currentUser)] = mySecretCode;
           codesObj[sanitizeEmail(partnerUser)] = partnerSecret;
           chatRef.set({ partnerCodes: codesObj });
         }
@@ -113,6 +118,7 @@ function startChatUI() {
   document.getElementById("chatBoxContainer").style.display = "block";
   document.getElementById("partnerName").innerText = partnerUser;
   document.getElementById("codeDisplay").innerText = "Chat secured with secret codes";
+
   loadMessages();
   listenTyping();
 }
@@ -141,8 +147,7 @@ function loadMessages() {
   const chatBox = document.getElementById("chatBox");
   db.ref('messages/' + chatId + '/messages').on('value', snap => {
     chatBox.innerHTML = "";
-    const data = snap.val();
-    if (!data) return;
+    const data = snap.val(); if (!data) return;
 
     Object.keys(data).forEach(id => {
       const msg = data[id];
@@ -157,7 +162,6 @@ function loadMessages() {
       if (msg.from === sanitizeEmail(currentUser)) {
         contentHtml += `<span onclick="deleteMessage('${id}')" style="margin-left:5px; cursor:pointer;">🗑️</span>`;
       }
-
       let tickHtml = msg.from === sanitizeEmail(currentUser) ? (msg.read ? "✓✓" : msg.delivered ? "✓✓" : "✓") : "";
       contentHtml += `<span style="float:right;margin-left:5px;">${tickHtml}</span>`;
 
@@ -201,7 +205,6 @@ function createHeart() {
   document.body.appendChild(heart);
   setTimeout(() => document.body.removeChild(heart), 4000);
 }
-
 setInterval(() => {
   const heart = document.createElement("div");
   heart.className = "heart";
