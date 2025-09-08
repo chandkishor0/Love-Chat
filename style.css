@@ -6,83 +6,86 @@ body {
   height: 100vh;
   overflow: hidden;
   transition: background 0.5s;
-  background: linear-gradient(to bottom, #ff9a9e, #fad0c4);
+  position: relative;
 }
+
+/* ---------- Themes ---------- */
+body.theme-pink { background: linear-gradient(to bottom, #ff9a9e, #fad0c4); }
+body.theme-purple { background: linear-gradient(to bottom, #a18cd1, #fbc2eb); }
+body.theme-night { background: linear-gradient(to bottom, #141e30, #243b55); }
 
 .container {
   width: 95%;
-  max-width: 400px;
+  max-width: 480px;
   margin: auto;
   padding-top: 20px;
+  position: relative;
 }
 
 /* ---------- Boxes Styling ---------- */
 #authBox, #partnerBox, #chatBoxContainer {
   background: rgba(255,255,255,0.15);
   backdrop-filter: blur(10px);
-  padding: 12px;
+  padding: 15px;
   border-radius: 15px;
-  box-shadow: 0 0 15px #ff69b4;
+  box-shadow: 0 0 20px #ff69b4;
   margin-bottom: 15px;
 }
 
-/* ---------- Compact Inputs & Textareas ---------- */
+/* ---------- Inputs ---------- */
 #authBox input,
 #authBox textarea,
 #partnerBox input,
 #partnerBox textarea,
 #chatBoxContainer input,
 #chatBoxContainer textarea {
-    width: 90% !important;
-    max-width: 320px !important;
-    padding: 8px 10px !important;
-    margin: 6px 0 !important;
-    font-size: 14px !important;
-    border-radius: 8px !important;
-    border: none !important;
-    outline: none !important;
-    box-sizing: border-box !important;
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    transition: all 0.3s ease;
+  width: 100% !important;
+  padding: 10px 12px !important;
+  margin: 8px 0 !important;
+  font-size: 15px !important;
+  border-radius: 10px !important;
+  border: 2px solid rgba(255,255,255,0.2);
+  outline: none !important;
+  box-sizing: border-box !important;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  transition: all 0.3s ease;
 }
 
-/* Hover/focus glow */
-#authBox input:hover, #authBox textarea:hover,
-#authBox input:focus, #authBox textarea:focus,
-#partnerBox input:hover, #partnerBox textarea:hover,
-#partnerBox input:focus, #partnerBox textarea:focus,
-#chatBoxContainer input:hover, #chatBoxContainer textarea:hover,
-#chatBoxContainer input:focus, #chatBoxContainer textarea:focus {
-    border: 1px solid #ff69b4;
-    box-shadow: 0 0 8px rgba(255,105,180,0.5);
+/* ---------- Neon border on focus ---------- */
+#authBox input:focus,
+#authBox textarea:focus,
+#partnerBox input:focus,
+#partnerBox textarea:focus,
+#chatBoxContainer input:focus,
+#chatBoxContainer textarea:focus {
+  border: 2px solid #ff69b4;
+  box-shadow: 0 0 10px #ff69b4, 0 0 20px rgba(255,105,180,0.5);
+  animation: neonBorder 1.5s infinite alternate;
+}
+@keyframes neonBorder {
+  0% { box-shadow: 0 0 5px #ff69b4, 0 0 10px rgba(255,105,180,0.3); }
+  50% { box-shadow: 0 0 12px #ff69b4, 0 0 25px rgba(255,105,180,0.6); }
+  100% { box-shadow: 0 0 8px #ff69b4, 0 0 18px rgba(255,105,180,0.4); }
 }
 
-/* Textarea height */
-#authBox textarea,
-#partnerBox textarea,
-#chatBoxContainer textarea {
-    height: 70px !important;
-    resize: vertical !important;
-}
-
-/* ---------- Animated Placeholder ---------- */
+/* ---------- Placeholder Animation ---------- */
 input::placeholder,
 textarea::placeholder {
-    color: rgba(255,255,255,0.7);
-    opacity: 1;
-    animation: placeholderGlow 2s infinite alternate;
+  color: rgba(255,255,255,0.7);
+  opacity: 1;
+  animation: placeholderGlow 2s infinite alternate;
 }
 @keyframes placeholderGlow {
-    0% { color: rgba(255,255,255,0.6); }
-    50% { color: #ff69b4; }
-    100% { color: rgba(255,255,255,0.6); }
+  0% { color: rgba(255,255,255,0.6); }
+  50% { color: #ff69b4; }
+  100% { color: rgba(255,255,255,0.6); }
 }
 
-/* ---------- Button Styling ---------- */
+/* ---------- Buttons ---------- */
 button {
   width: 100%;
-  padding: 8px 12px;
+  padding: 10px 12px;
   margin: 5px 0;
   border-radius: 10px;
   font-size: 15px;
@@ -90,29 +93,30 @@ button {
   cursor: pointer;
   background: #ff69b4;
   color: white;
-  box-shadow: 0 0 10px #ff69b4;
+  box-shadow: 0 0 12px #ff69b4;
   transition: 0.3s;
   border: none;
 }
 button:hover {
   background: #ff3385;
+  box-shadow: 0 0 20px #ff69b4, 0 0 25px rgba(255,105,180,0.6);
 }
 
 /* ---------- Chat Box ---------- */
 #chatBox {
-  height: 350px;
+  height: 360px;
   overflow-y: auto;
   margin-bottom: 10px;
   padding: 10px;
   border-radius: 15px;
-  box-shadow: inset 0 0 10px #ff69b4;
+  box-shadow: inset 0 0 12px #ff69b4;
   display: flex;
   flex-direction: column;
   gap: 5px;
   scroll-behavior: smooth;
 }
 
-/* Messages */
+/* ---------- Messages ---------- */
 .msg {
   padding: 10px 14px;
   border-radius: 15px;
@@ -123,121 +127,22 @@ button:hover {
 }
 .msg.you {
   background: rgba(255,182,193,0.7);
-  box-shadow: 0 0 10px #ff69b4;
-  align-self: flex-end;
-  text-align: right;
+  box-shadow:0 0 12px #ff69b4;
+  align-self:flex-end;
+  text-align:right;
 }
 .msg.partner {
   background: rgba(173,216,230,0.7);
-  box-shadow: 0 0 10px #00ffff;
-  align-self: flex-start;
-  text-align: left;
+  box-shadow:0 0 12px #00ffff;
+  align-self:flex-start;
+  text-align:left;
 }
-
-/* Pop Animation */
 @keyframes pop {
-  0% { transform: scale(0.5); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% { transform: scale(0.5); opacity:0; }
+  100% { transform: scale(1); opacity:1; }
 }
 
-/* Chat Input Layout */
-.chatInputContainer {
-  display: flex;
-  flex-direction: column;
-}
-.chatInputContainer input {
-  margin-bottom: 5px;
-}
-.chatButtonContainer {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-.chatButtonContainer button {
-  flex: 1;
-}
-
-/* Typing Indicator */
-#typingIndicator {
-  color: white;
-  font-size: 14px;
-}
-.dot { animation: blink 1s infinite; margin-right: 2px; }
-.dot:nth-child(2){ animation-delay: 0.2s; }
-.dot:nth-child(3){ animation-delay: 0.4s; }
-@keyframes blink {
-  0%,20%,100% {opacity:0;}
-  50% {opacity:1;}
-}
-
-/* Chat Header */
-.chatHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background: rgba(255, 105, 180, 0.8);
-  color: white;
-  font-weight: bold;
-  padding: 10px;
-  border-radius: 10px 10px 0 0;
-  gap: 10px;
-}
-.chatHeader #partnerName { flex:1; text-align:left; font-size:16px; }
-
-/* Logout Neon Button */
-#logoutBtn {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  border: none;
-  background: rgba(10,10,12,0.25);
-  color: #ffffff;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  position: relative;
-  overflow: visible;
-  box-shadow: 0 4px 12px rgba(255,105,180,0.12);
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-#logoutBtn svg { width:20px; height:20px; }
-#logoutBtn:hover {
-  transform: scale(1.08);
-  box-shadow: 0 8px 22px rgba(255,105,180,0.25), inset 0 0 8px rgba(255,105,180,0.06);
-}
-#logoutBtn::before{
-  content: "";
-  position: absolute;
-  inset: -4px;
-  border-radius: 50%;
-  padding: 2px;
-  background: linear-gradient(90deg, rgba(255,40,140,0.95), rgba(0,255,255,0.9), rgba(255,40,140,0.95));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 6px), black calc(100% - 5px));
-  mask: radial-gradient(farthest-side, transparent calc(100% - 6px), black calc(100% - 5px));
-  z-index: -1;
-  filter: blur(6px);
-  opacity: .9;
-  animation: neonRotate 3s linear infinite;
-  transform-origin: center;
-}
-#logoutBtn::after{
-  content:"";
-  position:absolute;
-  inset:-12px;
-  border-radius:50%;
-  background: radial-gradient(circle at 30% 30%, rgba(255,105,180,0.12), transparent 20%),
-              radial-gradient(circle at 70% 70%, rgba(0,255,255,0.06), transparent 25%);
-  z-index: -2;
-  pointer-events: none;
-}
-@keyframes neonRotate {
-  0% { transform: rotate(0deg); background-position: 0% 50%; }
-  50% { transform: rotate(180deg); background-position: 100% 50%; }
-  100% { transform: rotate(360deg); background-position: 0% 50%; }
-}
-
-/* Floating Hearts */
+/* ---------- Floating Hearts ---------- */
 .heart {
   position:absolute;
   width:20px;
@@ -259,4 +164,102 @@ button:hover {
 @keyframes float {
   0% { transform: translateY(0) rotate(45deg); opacity:1; }
   100% { transform: translateY(-500px) rotate(45deg); opacity:0; }
+}
+
+/* ---------- Neon Buttons Base ---------- */
+.neonButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(10,10,12,0.35);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: visible;
+  box-shadow: 0 2px 8px rgba(255,105,180,0.3);
+  transition: transform .18s ease, box-shadow .18s ease, background 0.3s;
+  position: relative;
+  z-index: 10;
+}
+.neonButton svg { width: 22px; height: 22px; fill: #fff; }
+.neonButton:hover {
+  transform: scale(1.1) rotate(15deg);
+  box-shadow: 0 4px 20px rgba(255,105,180,0.6), inset 0 0 8px rgba(255,105,180,0.2);
+  background: rgba(10,10,12,0.5);
+}
+.neonButton::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: 50%;
+  padding: 2px;
+  background: linear-gradient(90deg, rgba(255,40,140,0.95), rgba(0,255,255,0.9), rgba(255,40,140,0.95));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 4px), black calc(100% - 2px));
+  mask: radial-gradient(farthest-side, transparent calc(100% - 4px), black calc(100% - 2px));
+  z-index: -1;
+  filter: blur(4px);
+  opacity: 0.85;
+  animation: neonRotate 2s linear infinite;
+  transform-origin: center;
+}
+.neonButton::after {
+  content: "";
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, rgba(255,105,180,0.1), transparent 20%),
+              radial-gradient(circle at 70% 70%, rgba(0,255,255,0.05), transparent 25%);
+  z-index: -2;
+  pointer-events: none;
+}
+@keyframes neonRotate {
+  0% { transform: rotate(0deg); background-position: 0% 50%; }
+  50% { transform: rotate(180deg); background-position: 100% 50%; }
+  100% { transform: rotate(360deg); background-position: 0% 50%; }
+}
+
+/* ---------- Logout Button ---------- */
+#logoutBtn { 
+  top: 8px; 
+  right: 8px; 
+  position: absolute; 
+}
+
+/* ---------- Chat Input + Send Button ---------- */
+.chatInputWrapper {
+  position: relative;
+  width: 100%;
+  margin-top: 8px;
+}
+.chatInputWrapper input {
+  width: 100%;
+  padding: 10px 50px 10px 12px; /* Send button ke liye right padding */
+  border-radius: 10px;
+  border: 2px solid rgba(255,255,255,0.2);
+  outline: none;
+  background: rgba(255,255,255,0.1);
+  color: #fff;
+  font-size: 15px;
+  box-sizing: border-box;
+  transition: all 0.3s ease;
+}
+.chatInputWrapper input:focus {
+  border: 2px solid #ff69b4;
+  animation: neonBorderFast 0.6s infinite alternate; /* Tap par neon speed fast */
+}
+@keyframes neonBorderFast {
+  0% { box-shadow: 0 0 8px #ff69b4, 0 0 12px rgba(255,105,180,0.3); }
+  50% { box-shadow: 0 0 18px #ff69b4, 0 0 35px rgba(255,105,180,0.6); }
+  100% { box-shadow: 0 0 12px #ff69b4, 0 0 28px rgba(255,105,180,0.4); }
+}
+
+/* ---------- Send Button ---------- */
+#sendBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
 }
