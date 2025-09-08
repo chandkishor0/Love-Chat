@@ -11,7 +11,7 @@ body {
 
 .container {
   width: 95%;
-  max-width: 400px; /* compact container */
+  max-width: 400px;
   margin: auto;
   padding-top: 20px;
 }
@@ -26,32 +26,57 @@ body {
   margin-bottom: 15px;
 }
 
-/* ---------- Input & Textarea ---------- */
-input, textarea {
-  width: 95%;
-  max-width: 350px;
-  padding: 8px 10px;
-  margin: 6px 0;
-  border-radius: 8px;
-  border: none;
-  font-size: 15px;
-  outline: none;
-  background: rgba(255,255,255,0.2);
-  color: #fff;
-  box-sizing: border-box;
-  transition: all 0.3s ease;
+/* ---------- Compact Inputs & Textareas ---------- */
+#authBox input,
+#authBox textarea,
+#partnerBox input,
+#partnerBox textarea,
+#chatBoxContainer input,
+#chatBoxContainer textarea {
+    width: 90% !important;
+    max-width: 320px !important;
+    padding: 8px 10px !important;
+    margin: 6px 0 !important;
+    font-size: 14px !important;
+    border-radius: 8px !important;
+    border: none !important;
+    outline: none !important;
+    box-sizing: border-box !important;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    transition: all 0.3s ease;
 }
 
-input:hover, textarea:hover,
-input:focus, textarea:focus {
-  border: 1px solid #ff69b4;
-  box-shadow: 0 0 8px rgba(255,105,180,0.5);
+/* Hover/focus glow */
+#authBox input:hover, #authBox textarea:hover,
+#authBox input:focus, #authBox textarea:focus,
+#partnerBox input:hover, #partnerBox textarea:hover,
+#partnerBox input:focus, #partnerBox textarea:focus,
+#chatBoxContainer input:hover, #chatBoxContainer textarea:hover,
+#chatBoxContainer input:focus, #chatBoxContainer textarea:focus {
+    border: 1px solid #ff69b4;
+    box-shadow: 0 0 8px rgba(255,105,180,0.5);
 }
 
-/* Textarea (message box) */
-textarea {
-  height: 70px;
-  resize: vertical;
+/* Textarea height */
+#authBox textarea,
+#partnerBox textarea,
+#chatBoxContainer textarea {
+    height: 70px !important;
+    resize: vertical !important;
+}
+
+/* ---------- Animated Placeholder ---------- */
+input::placeholder,
+textarea::placeholder {
+    color: rgba(255,255,255,0.7);
+    opacity: 1;
+    animation: placeholderGlow 2s infinite alternate;
+}
+@keyframes placeholderGlow {
+    0% { color: rgba(255,255,255,0.6); }
+    50% { color: #ff69b4; }
+    100% { color: rgba(255,255,255,0.6); }
 }
 
 /* ---------- Button Styling ---------- */
@@ -60,7 +85,6 @@ button {
   padding: 8px 12px;
   margin: 5px 0;
   border-radius: 10px;
-  border: none;
   font-size: 15px;
   font-weight: bold;
   cursor: pointer;
@@ -68,6 +92,7 @@ button {
   color: white;
   box-shadow: 0 0 10px #ff69b4;
   transition: 0.3s;
+  border: none;
 }
 button:hover {
   background: #ff3385;
@@ -109,13 +134,13 @@ button:hover {
   text-align: left;
 }
 
-/* ---------- Pop Animation ---------- */
+/* Pop Animation */
 @keyframes pop {
   0% { transform: scale(0.5); opacity: 0; }
   100% { transform: scale(1); opacity: 1; }
 }
 
-/* ---------- Chat Input Layout ---------- */
+/* Chat Input Layout */
 .chatInputContainer {
   display: flex;
   flex-direction: column;
@@ -132,7 +157,7 @@ button:hover {
   flex: 1;
 }
 
-/* ---------- Typing Indicator ---------- */
+/* Typing Indicator */
 #typingIndicator {
   color: white;
   font-size: 14px;
@@ -145,7 +170,7 @@ button:hover {
   50% {opacity:1;}
 }
 
-/* ---------- Chat Header ---------- */
+/* Chat Header */
 .chatHeader {
   display: flex;
   justify-content: space-between;
@@ -159,7 +184,7 @@ button:hover {
 }
 .chatHeader #partnerName { flex:1; text-align:left; font-size:16px; }
 
-/* ---------- Logout Neon Button ---------- */
+/* Logout Neon Button */
 #logoutBtn {
   width: 44px;
   height: 44px;
@@ -210,4 +235,28 @@ button:hover {
   0% { transform: rotate(0deg); background-position: 0% 50%; }
   50% { transform: rotate(180deg); background-position: 100% 50%; }
   100% { transform: rotate(360deg); background-position: 0% 50%; }
+}
+
+/* Floating Hearts */
+.heart {
+  position:absolute;
+  width:20px;
+  height:20px;
+  background: rgba(255,105,180,0.7);
+  transform: rotate(45deg);
+  animation: float 5s linear infinite;
+}
+.heart:before, .heart:after {
+  content:"";
+  position:absolute;
+  width:20px;
+  height:20px;
+  background: rgba(255,105,180,0.7);
+  border-radius:50%;
+}
+.heart:before { top:-10px; left:0; }
+.heart:after { left:10px; top:0; }
+@keyframes float {
+  0% { transform: translateY(0) rotate(45deg); opacity:1; }
+  100% { transform: translateY(-500px) rotate(45deg); opacity:0; }
 }
